@@ -4,15 +4,21 @@ from django.db.models.aggregates import Count
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, RetrieveModelMixin
+from rest_framework.mixins import (
+    CreateModelMixin, DestroyModelMixin, RetrieveModelMixin)
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework import status
 from .filters import ProductFilter
-from .models import Cart, CartItem, Collection, Customer, Order, OrderItem, Product, Review, ProductImage
-from .serializers import (AddCartItemSerializer, CartItemSerializer, CartSerializer, CollectionSerializer, CreateOrderSerializer, CustomerSerializer,
-                          OrderSerializer, ProductSerializer, ProductImageSerializer, ReviewSerializer, UpdateCartItemSerializer, UpdateOrderSerializer)
+from .models import (
+    Cart, CartItem, Collection, Customer, Order,
+    OrderItem, Product, Review, ProductImage)
+from .serializers import (
+    AddCartItemSerializer, CartItemSerializer, CartSerializer,
+    CollectionSerializer, CreateOrderSerializer, CustomerSerializer,
+    OrderSerializer, ProductSerializer, ProductImageSerializer,
+    ReviewSerializer, UpdateCartItemSerializer, UpdateOrderSerializer)
 
 
 class ProductViewSet(ModelViewSet):
@@ -30,7 +36,10 @@ class ProductViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         if OrderItem.objects.filter(product_id=kwargs['pk']).count() > 0:
-            return Response({'error': 'Product cannot be deleted because it is associated with an order item.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response({
+                'error': 'Product cannot be deleted because it is associated \
+                    with an order item.'},
+                status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         return super().destroy(request, *args, **kwargs)
 
@@ -42,7 +51,8 @@ class ProductImageViewSet(ModelViewSet):
         return {'product_id': self.kwargs['product_pk']}
 
     def get_queryset(self):
-        return ProductImage.objects.filter(product_id=self.kwargs['product_pk'])
+        return ProductImage.objects.filter(
+            product_id=self.kwargs['product_pk'])
 
 
 class CollectionViewSet(ModelViewSet):
@@ -53,7 +63,10 @@ class CollectionViewSet(ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         if Product.objects.filter(collection_id=kwargs['pk']):
-            return Response({'error': 'Collection cannot be deleted because it includes one or more products.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+            return Response({
+                'error': 'Collection cannot be deleted because\
+                    it includes one or more products.'},
+                status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
         return super().destroy(request, *args, **kwargs)
 
@@ -104,7 +117,8 @@ class CustomerViewSet(ModelViewSet):
     def history(self, request, pk):
         return Response('ok')
 
-    @action(detail=False, methods=['GET', 'PUT'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['GET', 'PUT'],
+            permission_classes=[IsAuthenticated])
     def me(self, request):
         customer = Customer.objects.get(
             user_id=request.user.id)

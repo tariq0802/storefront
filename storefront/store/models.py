@@ -1,19 +1,9 @@
-import uuid
-import os
 from django.contrib import admin
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from uuid import uuid4
 from store.validators import validate_file_size
-
-
-
-# def product_image_file_path(instance, filename):
-#     ext = os.path.splitext(filename)[1]
-#     filename = f'{uuid.uuid4()}{ext}'
-
-#     return os.path.join('uploads', 'product', filename)
 
 
 class Promotion(models.Model):
@@ -24,7 +14,8 @@ class Promotion(models.Model):
 class Collection(models.Model):
     title = models.CharField(max_length=255)
     featured_product = models.ForeignKey(
-        'Product', on_delete=models.SET_NULL, null=True, related_name='+', blank=True)
+        'Product', on_delete=models.SET_NULL, null=True,
+        related_name='+', blank=True)
 
     def __str__(self) -> str:
         return self.title
@@ -58,7 +49,8 @@ class ProductImage(models.Model):
     product = models.ForeignKey(
         Product, on_delete=models.CASCADE, related_name='images')
     image = models.FileField(null=True, blank=True,
-                             upload_to='store/images', validators=[validate_file_size])
+                             upload_to='store/images',
+                             validators=[validate_file_size])
 
 
 class Customer(models.Model):
@@ -108,7 +100,8 @@ class Order(models.Model):
 
     placed_at = models.DateTimeField(auto_now_add=True)
     payment_status = models.CharField(
-        max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
+        max_length=1, choices=PAYMENT_STATUS_CHOICES,
+        default=PAYMENT_STATUS_PENDING)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
 
     class Meta:
